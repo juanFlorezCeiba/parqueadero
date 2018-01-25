@@ -28,6 +28,9 @@ public class Registro  implements Serializable{
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar fechaSalida;
 
+	@OneToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="carro_placa")
+	private Vehiculo vehiculo;
 	
 	
 	public Registro(int id, Calendar fechaEntrada, Calendar fechaSalida) {
@@ -66,6 +69,16 @@ public class Registro  implements Serializable{
 
 	public void setFechaSalida(Calendar fechaSalida) {
 		this.fechaSalida = fechaSalida;
+	}
+
+
+	public Vehiculo getVehiculo() {
+		return vehiculo;
+	}
+
+
+	public void setVehiculo(Vehiculo vehiculo) {
+		this.vehiculo = vehiculo;
 	}
 	
 	
