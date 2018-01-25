@@ -5,6 +5,8 @@ import java.util.Calendar;
 
 import javax.persistence.*;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -22,10 +24,12 @@ public class Registro  implements Serializable{
 	
 	@Column(name = "fecha_entrada", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
 	private Calendar fechaEntrada;
 	
 	@Column(name = "fecha_salida", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
+	@LastModifiedDate
 	private Calendar fechaSalida;
 
 	@OneToOne(fetch=FetchType.LAZY)
@@ -33,12 +37,19 @@ public class Registro  implements Serializable{
 	private Vehiculo vehiculo;
 	
 	
-	public Registro(int id, Calendar fechaEntrada, Calendar fechaSalida) {
+	public Registro() {
+		
+	}
+	
+	public Registro(int id, Calendar fechaEntrada, Calendar fechaSalida, Vehiculo vehiculo) {
 		super();
 		this.id = id;
 		this.fechaEntrada = fechaEntrada;
 		this.fechaSalida = fechaSalida;
+		this.vehiculo = vehiculo;
 	}
+
+
 
 
 	//Getters and Setters

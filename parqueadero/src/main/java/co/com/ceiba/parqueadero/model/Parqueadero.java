@@ -1,6 +1,7 @@
 package co.com.ceiba.parqueadero.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,23 +18,26 @@ public class Parqueadero {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
-	@NotBlank
+	@NotNull
 	@Column(name = "cant_carros")
 	private int cantCarros;
 	
-	@NotBlank
+	@NotNull
 	@Column(name = "cant_motos")
 	private int cantMotos;
 	
-	@NotBlank
+	@NotNull
 	@Column(name = "espacios_carros")
 	private int espaciosCarros;
 	
-	@NotBlank
+	@NotNull
 	@Column(name = "espacios_motos")
 	private int espaciosMotos;
 
 	
+	public Parqueadero() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	//Getters and Setters
 	

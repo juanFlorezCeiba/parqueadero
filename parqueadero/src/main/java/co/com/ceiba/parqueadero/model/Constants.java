@@ -21,6 +21,11 @@ public class Constants implements Serializable{
 	
 	@NotBlank
 	private String valor;
+	
+	
+	public Constants() {
+		// TODO Auto-generated constructor stub
+	}
 
 	public String getId() {
 		return id;
