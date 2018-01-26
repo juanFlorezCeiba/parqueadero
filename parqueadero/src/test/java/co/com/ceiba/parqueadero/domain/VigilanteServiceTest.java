@@ -14,6 +14,7 @@ import co.com.ceiba.parqueadero.testdatabuilder.RegistroTestDataBuilder;
 
 public class VigilanteServiceTest {
 
+	
 	private VigilanteService vigilanteService;
 	
 	@Before
@@ -52,7 +53,7 @@ public class VigilanteServiceTest {
 	    Date fechaFinal = calendarFinal.getTime();
 	    
 	    //Act
-	    int tarifa = vigilanteService.calcularTarifa(fechaInicial, fechaFinal);
+	    int tarifa = vigilanteService.calcularTarifa(fechaInicial, fechaFinal, "moto");
 	    
 	    //Assert
 	    Assert.assertEquals(1, tarifa);
