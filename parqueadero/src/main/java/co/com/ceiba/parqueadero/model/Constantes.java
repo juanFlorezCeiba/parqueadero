@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties(allowGetters = true)
 
-public class Constants implements Serializable{
+public class Constantes implements Serializable{
 
 	@Id
 	private String id;
@@ -23,7 +23,7 @@ public class Constants implements Serializable{
 	private String valor;
 	
 	
-	public Constants() {
+	public Constantes() {
 		// TODO Auto-generated constructor stub
 	}
 

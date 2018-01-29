@@ -2,18 +2,19 @@ package co.com.ceiba.parqueadero.domain;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.com.ceiba.parqueadero.model.Carro;
-import co.com.ceiba.parqueadero.model.Constants;
+import co.com.ceiba.parqueadero.model.Constantes;
 import co.com.ceiba.parqueadero.model.Moto;
 import co.com.ceiba.parqueadero.model.Parqueadero;
 import co.com.ceiba.parqueadero.model.Registro;
 import co.com.ceiba.parqueadero.model.Vehiculo;
 import co.com.ceiba.parqueadero.repository.CarroRepository;
-import co.com.ceiba.parqueadero.repository.ConstantsRepository;
+import co.com.ceiba.parqueadero.repository.ConstantesRepository;
 import co.com.ceiba.parqueadero.repository.MotoRepository;
 import co.com.ceiba.parqueadero.repository.ParqueaderoRepository;
 import co.com.ceiba.parqueadero.repository.RegistroRepository;
@@ -22,9 +23,9 @@ import co.com.ceiba.parqueadero.repository.RegistroRepository;
 public class VigilanteService {
 
 	@Autowired
-	private ConstantsRepository constantsRepository;
+	 ConstantesRepository constantsRepository;
 	@Autowired
-	private ParqueaderoRepository parqueaderoRepository;
+	 ParqueaderoRepository parqueaderoRepository;
 	@Autowired
 	MotoRepository motoRepository;
 	@Autowired
@@ -32,19 +33,99 @@ public class VigilanteService {
 	@Autowired
 	private RegistroRepository registroRepository;
 	
+	
+	
 	public VigilanteService(){
+		
+	}
+
+
+
+	/**
+	 * Función que permite crear un ingreso al parqueadero a una moto.
+	 * @param moto, moto la cual ingresará al parqueadero.
+	 * @return cadena, la cual indica si ingreso o no al parqueadero.
+	 */
+	public String crearIngresoMoto(Moto moto) {
+		
+		Parqueadero parqueadero = parqueaderoRepository.findOne(1);
+		
+		//Se valida si la moto esta parqueado en este momento.
+		if(vehiculoEstaParqueado(moto)){
+			return "VEHICLE_PARKED_NOW";
+		}
+		//Se valida si la moto puede acceder al parqueadero.
+		if(!puedeIngresar(moto.getPlaca())){
+			return "IS_NOT_SUNDAY_MONDAY";
+		}
+			
+		int espaciosMotos = parqueadero.getEspaciosMotos();
+			
+		//Se verifica si hay espacio en el parqueadero.
+		if(espaciosMotos == 0){
+			return "THERE_IS_NOT_SPACE";
+		}
+		motoRepository.save(moto);
+		
+		Registro registro = new Registro();
+		registro.setVehiculo(moto);
+		
+		registroRepository.save(registro);
+		
+		return "BIKE_HAS_BEEN_SAVED";
+
+	}
+
+
+
+	/**
+	 * Función que permite crear un ingreso al parqueadero a un carro.
+	 * @param carro, carro el cual ingresará al parqueadero.
+	 * @return cadena, la cual indica si ingreso o no al parqueadero.
+	 */
+	public String crearIngresoCarro(Carro carro) {
+
+		Parqueadero parqueadero = parqueaderoRepository.findOne(1);
+		
+		//Se valida si el carro esta parqueado en este momento.
+		if(vehiculoEstaParqueado(carro)){
+			return "VEHICLE_PARKED_NOW";
+		} 
+		
+		//Se valida si el carro puede acceder al parqueadero.
+		if(!puedeIngresar(carro.getPlaca())){
+			return "IS_NOT_SUNDAY_MONDAY";
+		}
+	
+			int espaciosCarros = parqueadero.getEspaciosCarros();
+			
+			//Se verifica si hay espacio en el parqueadero.
+			if(espaciosCarros == 0){
+				return "THERE_IS_NOT_SPACE";
+			}
+			
+			carroRepository.save(carro);
+			
+			Registro registro = new Registro();
+			registro.setVehiculo(carro);
+			
+			registroRepository.save(registro);
+			
+			return "CAR_HAS_BEEN_SAVED";
 	}
 
 
 
 	 /**
-	  * Funci�n para calcular la tarifa del tiempo que estuvo un vehiculo en el parquedero.
-	  * @param fechaInicial
-	  * @param fechaFinal
-	  * @param type
+	  * Función para calcular la tarifa del tiempo que estuvo un vehiculo en el parquedero.
+	  * @param fechaInicial, fecha en la que ingreso el vehiculo.
+	  * @param fechaFinal, fecha en la que sale el vehiculo.
+	  * @param type, tipo de vehiculo.
 	  * @return
 	  */
 	public int calcularTarifa(Date fechaInicial, Date fechaFinal, String type, int cilindraje) {
+
+		Constantes constantTypeVehicle = constantsRepository.findOne("vehiculo_tipo");
 
 		float diff = (fechaFinal.getTime()-fechaInicial.getTime())/60000;			
 		float totalHoras = diff/60;
@@ -55,36 +136,35 @@ public class VigilanteService {
 		int valorHora = 0;
 		int valorDia = 0;
 		
-		if(type == "moto"){
+		if(type == constantTypeVehicle.getValor()){
 
+			Constantes constantValorHoraMoto = constantsRepository.findOne("valor_hora_moto");
+			Constantes constantValorDiaMoto = constantsRepository.findOne("valor_dia_moto");
 			
-//			Constants constantValorHoraMoto = constantsRepository.findOne("valor_hora_moto");
-//			System.out.println(constantValorHoraMoto.getId());
-//			Constants constantValorDiaMoto = constantsRepository.findOne("valor_dia_moto");
-//			System.out.println("SI");
-//
-//			valorHora = Integer.parseInt(constantValorHoraMoto.getValor());
-//			valorDia = Integer.parseInt(constantValorDiaMoto.getValor());
 
-			valorHora = 500;
-			valorDia = 4000;
+			valorHora = Integer.parseInt(constantValorHoraMoto.getValor());
+			valorDia = Integer.parseInt(constantValorDiaMoto.getValor());
+
+//			valorHora = 500;
+//			valorDia = 4000;
 			total += totalTarifa(valorHora, valorDia, porcentajeDias, total);
 			if(cilindraje > 500){
 				total += 2000;
 			}
 			
 		} else {
-//			Constants constantValorHoraCarro = constantsRepository.findOne("valor_hora_carro");
-//			Constants constantValorDiaCarro = constantsRepository.findOne("valor_dia_carro");
-//			valorHora = Integer.parseInt(constantValorHoraCarro.getValor());
-//			valorDia = Integer.parseInt(constantValorDiaCarro.getValor());
 			
-			valorHora = 1000;
-			valorDia = 8000;
+			Constantes constantValorHoraCarro = constantsRepository.findOne("valor_hora_carro");
+			Constantes constantValorDiaCarro = constantsRepository.findOne("valor_dia_carro");
+			
+			valorHora = Integer.parseInt(constantValorHoraCarro.getValor());
+			valorDia = Integer.parseInt(constantValorDiaCarro.getValor());
+			
+//			valorHora = 1000;
+//			valorDia = 8000;
 			total += totalTarifa(valorHora, valorDia, porcentajeDias, total);
 
 		}
-		
 		return total;
 	}
 
@@ -155,76 +235,69 @@ public class VigilanteService {
 
 
 	/**
-	 * Función que permite crear un ingreso al parqueadero a una moto.
-	 * @param moto, moto la cual ingresará al parqueadero.
-	 * @return cadena, la cual indica si ingreso o no al parqueadero.
+	 * Función que permite saber si un vehiculo esta actualmente en el parqueadero
+	 * @param vehiculo, entidad vehiculo.
+	 * @return true si el vehiculo se encuentra actualmente en el parqueadero, false de lo contrario.
 	 */
-	public String crearIngresoMoto(Moto moto) {
+	public boolean vehiculoEstaParqueado(Vehiculo vehiculo) {
 		
-		Parqueadero parqueadero = parqueaderoRepository.findOne(1);
-		
-		if(!puedeIngresar(moto.getPlaca())){
-			return "IS_NOT_SUNDAY_MONDAY";
+		List<Registro> registros = registroRepository.findByVehiculoOrderByFechaEntradaDesc(vehiculo);
+		Registro registro = registros.get(0);		
+		if(registro == null){
+			
+			return false;
+		}
+		if(registro.getFechaSalida() == null){
+			return true;
 		}
 	
-			int espaciosMotos = parqueadero.getEspaciosMotos();
-			
-			if(espaciosMotos == 0){
-				return "THERE_IS_NOT_SPACE";
-			}
-			motoRepository.save(moto);
-			
-			Registro registro = new Registro();
-			registro.setVehiculo(moto);
-			
-			registroRepository.save(registro);
-			
-			return "HAS BEEN SAVED";
-
+		return false;
 	}
 
 
 
 	/**
-	 * Función que permite crear un ingreso al parqueadero a un carro.
-	 * @param carro, carro el cual ingresará al parqueadero.
-	 * @return cadena, la cual indica si ingreso o no al parqueadero.
+	 * Metodo para dar salida a un carro y calcular la tarifa a pagar
+	 * por el tiempo que estuvo en el parqueadero.
+	 * @param placa, placa del vehiculo.
+	 * @return response, la cual contendrá la respuesta al proceso.
 	 */
-	public String crearIngresoCarro(Carro carro) {
+	public String salidaCarro(String placa) {
 
-		Parqueadero parqueadero = parqueaderoRepository.findOne(1);
+		Calendar fechaSalida = Calendar.getInstance();
 		
-		if(!puedeIngresar(carro.getPlaca())){
-			return "IS_NOT_SUNDAY_MONDAY";
-		}
-	
-			int espaciosCarros = parqueadero.getEspaciosCarros();
-			
-			if(espaciosCarros == 0){
-				return "THERE_IS_NOT_SPACE";
-			}
-			carroRepository.save(carro);
-			
-			Registro registro = new Registro();
-			registro.setVehiculo(carro);
-			
-			registroRepository.save(registro);
-			
-			return "HAS BEEN SAVED";
+		Carro carro = carroRepository.findOne(placa);
+		List<Registro> registros = registroRepository.findByVehiculoOrderByFechaEntradaDesc(carro);
+		Registro registro = registros.get(0);	
+		registro.setFechaSalida(fechaSalida);
+		
+		registroRepository.save(registro);
+		
+		//TODO-Agregar la parte de calcular tarifa.
+		return "VEHICLE_HAS_LEFT";
 	}
 
 
+	/**
+	 * Metodo para dar salida al vehiculo y calcular la tarifa a pagar
+	 * por el tiempo que estuvo en el parqueadero.
+	 * @param placa, placa del vehiculo.
+	 * @return response, la cual contendrá la respuesta al proceso.
+	 */
+	public String salidaMoto(String placa) {
 
-	public boolean vehiculoEstaGuardado(Vehiculo vehiculo) {
+		Calendar fechaSalida = Calendar.getInstance();
 		
-		Registro registro = registroRepository.findByVehiculo(vehiculo);
+		Moto moto= motoRepository.findOne(placa);
+		List<Registro> registros = registroRepository.findByVehiculoOrderByFechaEntradaDesc(moto);
 		
-		if(registro == null){
-			System.out.println("NO EXISTE");
-			return false;
-		}
-		System.out.println("EXISTE");
-		return true;
+		Registro registro = registros.get(0);
+		registro.setFechaSalida(fechaSalida);
+		
+		registroRepository.save(registro);
+		//TODO-Agregar la parte de calcular tarifa.
+
+		return "VEHICLE_HAS_LEFT";
 	}
 	
 	

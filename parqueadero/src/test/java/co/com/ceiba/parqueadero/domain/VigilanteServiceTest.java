@@ -15,7 +15,6 @@ import co.com.ceiba.parqueadero.testdatabuilder.MotoTestDataBuilder;
 import co.com.ceiba.parqueadero.testdatabuilder.RegistroTestDataBuilder;
 
 public class VigilanteServiceTest {
-
 	
 	private VigilanteService vigilanteService;
 	
@@ -56,6 +55,39 @@ public class VigilanteServiceTest {
 		Assert.assertEquals(message, "HAS BEEN SAVED");
 	}
 	
+	/**
+	 * Prueba unitaria del metodo que permite darle salida a un carro.
+	 */
+	/*@Test
+	public void salidaCarroTest(){
+		
+		//Arrange
+		String placa = "qwerty201";
+		
+		//Act
+		String response = vigilanteService.salidaCarro(placa);
+		
+		//Assert
+		Assert.assertEquals("VEHICLE_HAS_LEFT", response);
+	}
+	*/
+	/**
+	 * Prueba unitaria del metodo que permite darle salida a un carro.
+	 */
+	/*@Test
+	public void salidaMotoTest(){
+		
+		//Arrange
+		String placa = "qwerty201";
+		
+		//Act
+		String response = vigilanteService.salidaMoto(placa);
+		
+		//Assert
+		Assert.assertEquals("VEHICLE_HAS_LEFT", response);
+	}
+	
+	*/
 	/**
 	 * Prueba unitaria para calcular tarifa.
 	 */
@@ -129,16 +161,20 @@ public class VigilanteServiceTest {
 		
 	}
 	
+	/**
+	 * Prueba unitaria para saber si un carro esta parqueado.
+	 */
 	@Test
-	public void vehiculoEstaGuardadoTest(){
+	public void carroEstaParqueadoTest(){
 		//Arrange
-		String placa = "qwerty201";
+		Carro carro = new CarroTestDataBuilder().withPlaca("qqazw32").withCilindraje(1400).build();
+		
 		
 		//Act
-		//boolean estaGuardado = vigilanteService.vehiculoEstaGuardado(placa);
+		boolean estaGuardado = vigilanteService.vehiculoEstaParqueado(carro);
 		
 		//Assert
-	//	Assert.assertEquals(true, estaGuardado);
+		Assert.assertEquals(false, estaGuardado);
 		
 	}
 }
