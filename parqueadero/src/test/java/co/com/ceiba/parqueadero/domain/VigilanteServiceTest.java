@@ -44,20 +44,35 @@ public class VigilanteServiceTest {
 	 */
 	@Test
 	public void calcularTarifaTest(){
-		//Assert 
+		//Arrange 
 	    Calendar calendarInicial = Calendar.getInstance();
-	    calendarInicial.set(2018, 0, 28, 20, 00);
+	    calendarInicial.set(2018, 0, 28, 05, 40);
 	    Calendar calendarFinal = Calendar.getInstance();
-		
 	    Date fechaInicial = calendarInicial.getTime();
 	    Date fechaFinal = calendarFinal.getTime();
 	    
 	    //Act
-	    int tarifa = vigilanteService.calcularTarifa(fechaInicial, fechaFinal, "moto", 501);
+	    int tarifa = vigilanteService.calcularTarifa(fechaInicial, fechaFinal, "carro", 650);
 	    
 	    //Assert
-	    Assert.assertEquals(1, tarifa);
+	    Assert.assertEquals(11000, tarifa);
 	    
+	}
+	
+	/**
+	 * Prueba unitaria para calcular el total de una tarifa a través de un metodo recursivo.
+	 */
+	@Test
+	public void totalTarifaTest(){
 		
+		//Arrange
+		double totalDias =  1.125;
+		int total = 0;
+		
+		//Act
+		int totalTarifa = vigilanteService.totalTarifa(1000, 8000,totalDias, total);
+		System.out.println("PRUEBA: " + totalTarifa);
+		//Assert
+		Assert.assertEquals(totalTarifa, 11000);
 	}
 }
