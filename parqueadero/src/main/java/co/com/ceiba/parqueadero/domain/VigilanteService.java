@@ -52,7 +52,7 @@ public class VigilanteService {
 		
 		//Se valida si la moto esta parqueado en este momento.
 		if(vehiculoEstaParqueado(moto)){
-			return "VEHICLE_PARKED_NOW";
+			return "VEHICLE_IS_PARKED_NOW";
 		}
 		//Se valida si la moto puede acceder al parqueadero.
 		if(!puedeIngresar(moto.getPlaca())){
@@ -71,6 +71,9 @@ public class VigilanteService {
 		registro.setVehiculo(moto);
 		
 		registroRepository.save(registro);
+		
+		parqueadero.setEspaciosMotos(espaciosMotos - 1);
+		parqueaderoRepository.save(parqueadero);
 		
 		return "BIKE_HAS_BEEN_SAVED";
 
@@ -111,6 +114,9 @@ public class VigilanteService {
 			
 			registroRepository.save(registro);
 			
+			parqueadero.setEspaciosCarros(espaciosCarros - 1);
+			parqueaderoRepository.save(parqueadero);
+			
 			return "CAR_HAS_BEEN_SAVED";
 	}
 
@@ -131,12 +137,11 @@ public class VigilanteService {
 		float totalHoras = diff/60;
 		float porcentajeDias = totalHoras/24;
 		
-		//TODO - Hacer metodo con recursividad y con conexi�n a BD.
 		int total = 0;
 		int valorHora = 0;
 		int valorDia = 0;
 		
-		if(type == constantTypeVehicle.getValor()){
+		if(type.equals(constantTypeVehicle.getValor())){
 
 			Constantes constantValorHoraMoto = constantsRepository.findOne("valor_hora_moto");
 			Constantes constantValorDiaMoto = constantsRepository.findOne("valor_dia_moto");
@@ -144,10 +149,8 @@ public class VigilanteService {
 
 			valorHora = Integer.parseInt(constantValorHoraMoto.getValor());
 			valorDia = Integer.parseInt(constantValorDiaMoto.getValor());
-
-//			valorHora = 500;
-//			valorDia = 4000;
 			total += totalTarifa(valorHora, valorDia, porcentajeDias, total);
+
 			if(cilindraje > 500){
 				total += 2000;
 			}
@@ -160,8 +163,6 @@ public class VigilanteService {
 			valorHora = Integer.parseInt(constantValorHoraCarro.getValor());
 			valorDia = Integer.parseInt(constantValorDiaCarro.getValor());
 			
-//			valorHora = 1000;
-//			valorDia = 8000;
 			total += totalTarifa(valorHora, valorDia, porcentajeDias, total);
 
 		}
@@ -242,6 +243,11 @@ public class VigilanteService {
 	public boolean vehiculoEstaParqueado(Vehiculo vehiculo) {
 		
 		List<Registro> registros = registroRepository.findByVehiculoOrderByFechaEntradaDesc(vehiculo);
+		
+		if(registros.size() == 0){
+			return false;
+		}
+		
 		Registro registro = registros.get(0);		
 		if(registro == null){
 			
@@ -273,8 +279,9 @@ public class VigilanteService {
 		
 		registroRepository.save(registro);
 		
-		//TODO-Agregar la parte de calcular tarifa.
-		return "VEHICLE_HAS_LEFT";
+		int total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Carro", carro.getCilindraje());
+		
+		return "El total es: $" + total + " ";
 	}
 
 
@@ -295,9 +302,10 @@ public class VigilanteService {
 		registro.setFechaSalida(fechaSalida);
 		
 		registroRepository.save(registro);
-		//TODO-Agregar la parte de calcular tarifa.
-
-		return "VEHICLE_HAS_LEFT";
+		
+		int total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Moto", moto.getCilindraje());
+		
+		return "El total es: $" + total + " ";
 	}
 	
 	

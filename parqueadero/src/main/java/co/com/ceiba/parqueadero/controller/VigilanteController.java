@@ -66,6 +66,13 @@ public class VigilanteController {
 		
 	}
 	
+	@GetMapping("/moto/salida/{placa}")
+	public String salidaMoto(@PathVariable(value = "placa") String placa){
+		String response = vigilanteService.salidaMoto(placa);
+		
+		return response;
+	}
+	
 	/**
 	 * Servicio para crear registro cuando ingresa un carro.
 	 * @param carro, entidad carro.
@@ -75,6 +82,13 @@ public class VigilanteController {
 	public String crearRegistroCarro(@Valid @RequestBody Carro carro){
 		
 		String response = vigilanteService.crearIngresoCarro(carro);
+		
+		return response;
+	}
+	
+	@GetMapping("/carro/salida/{placa}")
+	public String salidaCarro(@PathVariable(value = "placa") String placa){
+		String response = vigilanteService.salidaCarro(placa);
 		
 		return response;
 	}

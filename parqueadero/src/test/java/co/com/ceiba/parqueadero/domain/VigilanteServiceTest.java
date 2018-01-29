@@ -6,7 +6,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import co.com.ceiba.parqueadero.ParqueaderoApplication;
 import co.com.ceiba.parqueadero.model.Carro;
 import co.com.ceiba.parqueadero.model.Moto;
 import co.com.ceiba.parqueadero.model.Registro;
@@ -16,6 +21,7 @@ import co.com.ceiba.parqueadero.testdatabuilder.RegistroTestDataBuilder;
 
 public class VigilanteServiceTest {
 	
+	@Autowired
 	private VigilanteService vigilanteService;
 	
 	@Before
