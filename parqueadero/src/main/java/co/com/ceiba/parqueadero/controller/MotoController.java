@@ -34,7 +34,7 @@ public class MotoController {
 		if(!motoRepository.exists(moto.getPlaca())){
 
 			System.out.println("MOTO: Placa = " + moto.getPlaca() + " - Cilindraje = " + moto.getCilindraje());
-			 motoRepository.save(moto);
+			motoRepository.save(moto);
 			 map.put("Status", "OK");
 		} 
 			

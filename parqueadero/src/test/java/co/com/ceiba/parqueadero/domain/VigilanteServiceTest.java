@@ -7,8 +7,10 @@ import java.util.GregorianCalendar;
 
 import org.junit.*;
 
+import co.com.ceiba.parqueadero.model.Carro;
 import co.com.ceiba.parqueadero.model.Moto;
 import co.com.ceiba.parqueadero.model.Registro;
+import co.com.ceiba.parqueadero.testdatabuilder.CarroTestDataBuilder;
 import co.com.ceiba.parqueadero.testdatabuilder.MotoTestDataBuilder;
 import co.com.ceiba.parqueadero.testdatabuilder.RegistroTestDataBuilder;
 
@@ -24,19 +26,34 @@ public class VigilanteServiceTest {
 	}
 	
 	/**
-	 * Prueba unitaria de la creación de un registro.
+	 * Prueba unitaria de la creación de un registro para una moto.
 	 */
 	@Test
-	public void crearIngresoTest(){
+	public void crearIngresoMotoTest(){
 		//Arrange
-		Moto moto = new MotoTestDataBuilder().withPlaca("qqazw32").build();
-		Registro registro = new RegistroTestDataBuilder().withVehiculo(moto).build();
-		
+		Moto moto = new MotoTestDataBuilder().withPlaca("qqazw32").withCilindraje(650).build();
+
 		//Act 
-		boolean seCreo = vigilanteService.crearIngreso(registro);
+		String message = vigilanteService.crearIngresoMoto(moto);
 		
 		//Assert
-		Assert.assertEquals(seCreo, false);
+		Assert.assertEquals(message, "HAS BEEN SAVED");
+	}
+	
+	
+	/**
+	 * Prueba unitaria de la creación de un registro para un carro.
+	 */
+	@Test
+	public void crearIngresoCarroTest(){
+		//Arrange
+		Carro carro = new CarroTestDataBuilder().withPlaca("qqazw32").withCilindraje(1400).build();
+		
+		//Act 
+		String message = vigilanteService.crearIngresoCarro(carro);
+		
+		//Assert
+		Assert.assertEquals(message, "HAS BEEN SAVED");
 	}
 	
 	/**
@@ -71,8 +88,57 @@ public class VigilanteServiceTest {
 		
 		//Act
 		int totalTarifa = vigilanteService.totalTarifa(1000, 8000,totalDias, total);
-		System.out.println("PRUEBA: " + totalTarifa);
+
 		//Assert
 		Assert.assertEquals(totalTarifa, 11000);
+	}
+	
+	/*
+	 * Prueba unitaria de la función que permite verificar 
+	 * si un vehiculo puede ingresar.
+	 */
+	@Test
+	public void puedeIngresarTest(){
+		
+		//Arrange
+		String placa = "new31c";
+		
+		//Act
+		boolean puedeIngresar = vigilanteService.puedeIngresar(placa);
+		
+		//Assert
+		Assert.assertEquals(true, puedeIngresar);
+		
+	}
+	
+	/*
+	 * Prueba unitaria de la función que permite verificar 
+	 * si un vehiculo con la primera letra 'A' en la placa puede ingresar.
+	 */
+	@Test
+	public void puedeIngresarPorLetraATest(){
+		
+		//Arrange
+		String placa = "acd30c";
+		
+		//Act
+		boolean puedeIngresar = vigilanteService.puedeIngresar(placa);
+		
+		//Assert
+		Assert.assertEquals(true, puedeIngresar);
+		
+	}
+	
+	@Test
+	public void vehiculoEstaGuardadoTest(){
+		//Arrange
+		String placa = "qwerty201";
+		
+		//Act
+		//boolean estaGuardado = vigilanteService.vehiculoEstaGuardado(placa);
+		
+		//Assert
+	//	Assert.assertEquals(true, estaGuardado);
+		
 	}
 }

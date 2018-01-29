@@ -32,7 +32,7 @@ public class RegistroTestDataBuilder {
 	}
 	
 	public Registro build(){
-		return new Registro(this.id, this.fechaEntrada, null, this.vehiculo);
+		return new Registro(this.id, this.fechaEntrada, this.vehiculo);
 	}
 	
 }
