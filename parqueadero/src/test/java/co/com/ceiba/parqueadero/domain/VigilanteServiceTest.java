@@ -46,14 +46,14 @@ public class VigilanteServiceTest {
 	public void calcularTarifaTest(){
 		//Assert 
 	    Calendar calendarInicial = Calendar.getInstance();
-	    calendarInicial.set(2018, 0, 25, 10, 00);
+	    calendarInicial.set(2018, 0, 28, 20, 00);
 	    Calendar calendarFinal = Calendar.getInstance();
 		
 	    Date fechaInicial = calendarInicial.getTime();
 	    Date fechaFinal = calendarFinal.getTime();
 	    
 	    //Act
-	    int tarifa = vigilanteService.calcularTarifa(fechaInicial, fechaFinal, "moto");
+	    int tarifa = vigilanteService.calcularTarifa(fechaInicial, fechaFinal, "moto", 501);
 	    
 	    //Assert
 	    Assert.assertEquals(1, tarifa);
