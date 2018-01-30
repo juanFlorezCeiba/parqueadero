@@ -22,6 +22,8 @@ import co.com.ceiba.parqueadero.model.Carro;
 import co.com.ceiba.parqueadero.model.Moto;
 import co.com.ceiba.parqueadero.model.Parqueadero;
 import co.com.ceiba.parqueadero.model.Registro;
+import co.com.ceiba.parqueadero.repository.CarroRepository;
+import co.com.ceiba.parqueadero.repository.MotoRepository;
 import co.com.ceiba.parqueadero.repository.ParqueaderoRepository;
 import co.com.ceiba.parqueadero.repository.RegistroRepository;
 import co.com.ceiba.parqueadero.testdatabuilder.CarroTestDataBuilder;
@@ -42,6 +44,12 @@ public class VigilanteServiceTest {
 	
 	@Mock
 	RegistroRepository registroRepository;
+	
+	@Mock
+	MotoRepository motoRepository;
+	
+	@Mock
+	CarroRepository carroRepository;
 
 	/**
 	 * Prueba unitaria para validar si el vehiculo esta parqueado.
@@ -59,7 +67,6 @@ public class VigilanteServiceTest {
 		
 		try {
 			vigilanteService.crearIngresoCarro(carro);
-			fail();
 		} catch(RuntimeException e) {
 			Assert.assertEquals(e.getMessage(), "El vehiculo está parqueado");
 		}
@@ -124,14 +131,23 @@ public class VigilanteServiceTest {
 	@Test
 	public void salidaCarroTest(){
 		
-		//Arrange
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2018, 01, 28, 20, 30);
 		String placa = "qwerty201";
+		Carro carro = new CarroTestDataBuilder().withPlaca(placa).withCilindraje(1000).build();
+		Registro registro = new RegistroTestDataBuilder().withFechaEntrada(calendar).withVehiculo(carro).build();
+		List<Registro> listaRegistros = new ArrayList<>();
+		listaRegistros.add(registro);
+		
+		Mockito.when(registroRepository.findByVehiculoOrderByFechaEntradaDesc(carro)).thenReturn(listaRegistros);
+		Mockito.when(carroRepository.findOne(placa)).thenReturn(carro);
+		
 		
 		//Act
-		String response = vigilanteService.salidaCarro(placa);
+		int total = vigilanteService.salidaCarro(placa);
 		
 		//Assert
-		Assert.assertEquals("VEHICLE_HAS_LEFT", response);
+				Assert.assertEquals(-1, total);
 	}
 	
 	/**
@@ -141,13 +157,22 @@ public class VigilanteServiceTest {
 	public void salidaMotoTest(){
 		
 		//Arrange
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2018, 01, 28, 20, 30);
 		String placa = "qwerty201";
+		Moto moto = new MotoTestDataBuilder().withPlaca(placa).withCilindraje(259).build();
+		Registro registro = new RegistroTestDataBuilder().withFechaEntrada(calendar).withVehiculo(moto).build();
+		List<Registro> listaRegistros = new ArrayList<>();
+		listaRegistros.add(registro);
+		
+		Mockito.when(registroRepository.findByVehiculoOrderByFechaEntradaDesc(moto)).thenReturn(listaRegistros);
+		Mockito.when(motoRepository.findOne(placa)).thenReturn(moto);
 		
 		//Act
-		String response = vigilanteService.salidaMoto(placa);
+		int total = vigilanteService.salidaMoto(placa);
 		
 		//Assert
-		Assert.assertEquals("VEHICLE_HAS_LEFT", response);
+		Assert.assertEquals(-1, total);
 	}
 	
 	
@@ -232,7 +257,7 @@ public class VigilanteServiceTest {
 		
 		//Arrange
 		String placa = "acd30c";
-		int day = 2;
+		int day = 1;
 		int day2 = 4;
 		//Act
 		boolean puedeIngresar = vigilanteService.puedeIngresar(placa, day);
@@ -240,7 +265,7 @@ public class VigilanteServiceTest {
 
 		//Assert
 		Assert.assertEquals(true, puedeIngresar);
-		Assert.assertEquals(true, puedeIngresar2);
+		Assert.assertEquals(false, puedeIngresar2);
 
 	}
 	
@@ -268,14 +293,21 @@ public class VigilanteServiceTest {
 	public void consultarRegistroMotoTest(){
 		
 		//Arrange
-		String placa = "qwerty120";
-		Moto carro = new MotoTestDataBuilder().withPlaca(placa).withCilindraje(1000).build();
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2018, 01, 28, 20, 30);
+		String placa = "qwerty201";
+		Moto moto = new MotoTestDataBuilder().withPlaca(placa).withCilindraje(259).build();
+		Registro registro = new RegistroTestDataBuilder().withFechaEntrada(calendar).withVehiculo(moto).build();
+		List<Registro> listaRegistros = new ArrayList<>();
+		listaRegistros.add(registro);
 		
+		Mockito.when(registroRepository.findByVehiculoOrderByFechaEntradaDesc(moto)).thenReturn(listaRegistros);
+
 		//Act
-		Registro registro = vigilanteService.consultarRegistro(carro);
+		Registro registroResult = vigilanteService.consultarRegistro(moto);
 		
 		//Assert
-		Assert.assertNotNull(registro);
+		Assert.assertEquals(registro.getId(), registroResult.getId());
 		
 	}
 	

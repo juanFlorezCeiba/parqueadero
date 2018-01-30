@@ -303,8 +303,13 @@ public class VigilanteService {
 	 *            placa del vehiculo.
 	 * @return response, la cual contendrá la respuesta al proceso.
 	 */
-	public String salidaCarro(String placa) {
+	public int salidaCarro(String placa) {
 
+		int total = 0;
+		
+		try {
+			
+		
 		Calendar fechaSalida = Calendar.getInstance();
 
 		Carro carro = carroRepository.findOne(placa);
@@ -314,11 +319,16 @@ public class VigilanteService {
 
 		registroRepository.save(registro);
 
-		int total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Carro",
+		 total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Carro",
 				carro.getCilindraje());
 
 		reponerUnEspacioParqueadero("Carro");
-		return "El total es: $" + total + " ";
+		}
+		catch(RuntimeException e) {
+			System.out.println(e.getMessage());
+			total = -1;;
+		}
+		return  total;
 	}
 
 	/**
@@ -329,8 +339,10 @@ public class VigilanteService {
 	 *            placa del vehiculo.
 	 * @return response, la cual contendrá la respuesta al proceso.
 	 */
-	public String salidaMoto(String placa) {
+	public int salidaMoto(String placa) {
 
+		int total = 0;
+		try {
 		Calendar fechaSalida = Calendar.getInstance();
 
 		Moto moto = motoRepository.findOne(placa);
@@ -341,12 +353,16 @@ public class VigilanteService {
 
 		registroRepository.save(registro);
 
-		int total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Moto",
+		total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Moto",
 				moto.getCilindraje());
 
 		reponerUnEspacioParqueadero("Moto");
-
-		return "El total es: $" + total + " ";
+		}
+		catch(RuntimeException e) {
+			System.out.println(e.getMessage());
+			total = -1;;
+		}
+		return  total;
 	}
 
 	/**

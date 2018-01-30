@@ -75,10 +75,10 @@ public class VigilanteController {
 	}
 	
 	@GetMapping("/moto/salida/{placa}")
-	public String salidaMoto(@PathVariable(value = "placa") String placa){
-		String response = vigilanteService.salidaMoto(placa);
+	public int salidaMoto(@PathVariable(value = "placa") String placa){
+		int total = vigilanteService.salidaMoto(placa);
 		
-		return response;
+		return total;
 	}
 	
 	/**
@@ -99,10 +99,10 @@ public class VigilanteController {
 	}
 	
 	@GetMapping("/carro/salida/{placa}")
-	public String salidaCarro(@PathVariable(value = "placa") String placa){
-		String response = vigilanteService.salidaCarro(placa);
+	public int salidaCarro(@PathVariable(value = "placa") String placa){
+		int total = vigilanteService.salidaCarro(placa);
 		
-		return response;
+		return total;
 	}
 	
 	/**
