@@ -13,12 +13,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.com.ceiba.parqueadero.domain.CarroService;
+import co.com.ceiba.parqueadero.domain.MotoService;
 import co.com.ceiba.parqueadero.domain.VigilanteService;
 import co.com.ceiba.parqueadero.model.Carro;
 import co.com.ceiba.parqueadero.model.Constantes;
 import co.com.ceiba.parqueadero.model.Moto;
+import co.com.ceiba.parqueadero.model.Registro;
 import co.com.ceiba.parqueadero.repository.ConstantesRepository;
 import co.com.ceiba.parqueadero.repository.MotoRepository;
+import co.com.ceiba.parqueadero.repository.VehiculoRepository;
 
 @RestController
 @RequestMapping("vigilante")
@@ -27,6 +31,10 @@ public class VigilanteController {
 	
 	@Autowired
 	private VigilanteService vigilanteService;
+	@Autowired
+	private CarroService carroService;
+	@Autowired
+	private MotoService motoService;
 	@Autowired
 	private ConstantesRepository constantsRepository;
 	@Autowired
@@ -91,5 +99,43 @@ public class VigilanteController {
 		String response = vigilanteService.salidaCarro(placa);
 		
 		return response;
+	}
+	
+	/**
+	 * Servicio que permite consultar el registro de un carro en el parqueadero.
+	 * @param placa, placa del carro.
+	 * @return entidad registro.
+	 */
+	@GetMapping("/carro/consultar/{placa}")
+	public ResponseEntity<Registro> consultarCarro(@PathVariable(value = "placa") String placa){
+		Carro carro = carroService.consultarCarro(placa);
+		
+		if(carro == null){
+			return ResponseEntity.notFound().build();
+		}
+		
+		Registro registro = vigilanteService.consultarRegistro(carro);
+		
+		return (registro == null)?ResponseEntity.notFound().build():ResponseEntity.ok().body(registro);
+		
+	}
+	
+	/**
+	 * Servicio  que permite consultar el registro de una moto en el parqueadero.
+	 * @param placa, placa de la moto.
+	 * @return entidad registro.
+	 */
+	@GetMapping("/moto/consultar/{placa}")
+	public ResponseEntity<Registro> consultarMoto(@PathVariable(value = "placa") String placa){
+		Moto moto = motoService.consultarMoto(placa);
+		
+		if(moto == null){
+			return ResponseEntity.notFound().build();
+		}
+		
+		Registro registro = vigilanteService.consultarRegistro(moto);
+		
+		return (registro == null)?ResponseEntity.notFound().build():ResponseEntity.ok().body(registro);
+		
 	}
 }

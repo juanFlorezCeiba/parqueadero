@@ -56,7 +56,7 @@ public class MotoService {
 	 * @param placa, placa de la moto.
 	 * @return entidad moto.
 	 */
-	public Moto obtenerUnMoto(String placa){
+	public Moto consultarMoto(String placa){
 		Moto moto = motoRepository.findOne(placa);
 		
 		if(moto == null){

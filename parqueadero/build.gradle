@@ -34,7 +34,7 @@ dependencies {
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 
 // JUnit and Mockito
-    testCompile "junit:junit:4.11"
+    testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:1.+"
 }
 

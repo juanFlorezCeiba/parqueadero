@@ -3,8 +3,10 @@ package co.com.ceiba.parqueadero.domain;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import co.com.ceiba.parqueadero.model.Carro;
@@ -32,13 +34,15 @@ public class VigilanteService {
 	private CarroRepository carroRepository;
 	@Autowired
 	private RegistroRepository registroRepository;
-	
+	@Autowired
+	Constantes constantValorDiaMoto;
+	@Autowired
+	Constantes constantValorHoraMoto;
 	
 	
 	public VigilanteService(){
 		
 	}
-
 
 
 	/**
@@ -47,9 +51,8 @@ public class VigilanteService {
 	 * @return cadena, la cual indica si ingreso o no al parqueadero.
 	 */
 	public String crearIngresoMoto(Moto moto) {
-		
 		Parqueadero parqueadero = parqueaderoRepository.findOne(1);
-		
+
 		//Se valida si la moto esta parqueado en este momento.
 		if(vehiculoEstaParqueado(moto)){
 			return "VEHICLE_IS_PARKED_NOW";
@@ -72,8 +75,7 @@ public class VigilanteService {
 		
 		registroRepository.save(registro);
 		
-		parqueadero.setEspaciosMotos(espaciosMotos - 1);
-		parqueaderoRepository.save(parqueadero);
+		llenarUnEspacioParqueadero("Moto");
 		
 		return "BIKE_HAS_BEEN_SAVED";
 
@@ -114,8 +116,7 @@ public class VigilanteService {
 			
 			registroRepository.save(registro);
 			
-			parqueadero.setEspaciosCarros(espaciosCarros - 1);
-			parqueaderoRepository.save(parqueadero);
+			llenarUnEspacioParqueadero("Carro");
 			
 			return "CAR_HAS_BEEN_SAVED";
 	}
@@ -131,7 +132,7 @@ public class VigilanteService {
 	  */
 	public int calcularTarifa(Date fechaInicial, Date fechaFinal, String type, int cilindraje) {
 
-		Constantes constantTypeVehicle = constantsRepository.findOne("vehiculo_tipo");
+		//Constantes constantTypeVehicle = constantsRepository.findOne("vehiculo_tipo");
 
 		float diff = (fechaFinal.getTime()-fechaInicial.getTime())/60000;			
 		float totalHoras = diff/60;
@@ -141,14 +142,18 @@ public class VigilanteService {
 		int valorHora = 0;
 		int valorDia = 0;
 		
-		if(type.equals(constantTypeVehicle.getValor())){
+		if(type.equals("Moto")){
 
-			Constantes constantValorHoraMoto = constantsRepository.findOne("valor_hora_moto");
-			Constantes constantValorDiaMoto = constantsRepository.findOne("valor_dia_moto");
+			constantValorHoraMoto = constantsRepository.findOne("valor_hora_moto");
+			constantValorDiaMoto = constantsRepository.findOne("valor_dia_moto");
 			
 
 			valorHora = Integer.parseInt(constantValorHoraMoto.getValor());
 			valorDia = Integer.parseInt(constantValorDiaMoto.getValor());
+		
+//			valorHora = 500;
+//			valorDia = 4000;
+//			
 			total += totalTarifa(valorHora, valorDia, porcentajeDias, total);
 
 			if(cilindraje > 500){
@@ -241,9 +246,8 @@ public class VigilanteService {
 	 * @return true si el vehiculo se encuentra actualmente en el parqueadero, false de lo contrario.
 	 */
 	public boolean vehiculoEstaParqueado(Vehiculo vehiculo) {
-		
 		List<Registro> registros = registroRepository.findByVehiculoOrderByFechaEntradaDesc(vehiculo);
-		
+
 		if(registros.size() == 0){
 			return false;
 		}
@@ -281,6 +285,7 @@ public class VigilanteService {
 		
 		int total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Carro", carro.getCilindraje());
 		
+		reponerUnEspacioParqueadero("Carro");
 		return "El total es: $" + total + " ";
 	}
 
@@ -305,8 +310,76 @@ public class VigilanteService {
 		
 		int total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Moto", moto.getCilindraje());
 		
+
+		reponerUnEspacioParqueadero("Moto");
+		
 		return "El total es: $" + total + " ";
 	}
 	
+	/**
+	 * Metodo que permite llenar un espacio cuando ingresa un vehiculo.
+	 * @param type
+	 */
+	public void llenarUnEspacioParqueadero(String type){
+		
+		Parqueadero parqueadero = parqueaderoRepository.findOne(1);
+
+		int espacioDisponible = 0;
+		
+		if(type.equals("Moto")){
+			espacioDisponible = parqueadero.getEspaciosMotos();
+			espacioDisponible = espacioDisponible - 1;
+			parqueadero.setEspaciosMotos(espacioDisponible);
+		} else {
+			espacioDisponible = parqueadero.getEspaciosCarros();
+			espacioDisponible = espacioDisponible - 1;
+			parqueadero.setEspaciosCarros(espacioDisponible);
+		}
+		
+		
+	}
 	
+	/**
+	 * Metodo que permite reponer un espacio cuando sale un vehiculo.
+	 * @param type
+	 */
+	public void reponerUnEspacioParqueadero(String type){
+		
+		Parqueadero parqueadero = parqueaderoRepository.findOne(1);
+
+		int espacioDisponible = 0;
+		
+		if(type.equals("Moto")){
+			espacioDisponible = parqueadero.getEspaciosMotos();
+			espacioDisponible = espacioDisponible + 1;
+			parqueadero.setEspaciosMotos(espacioDisponible);
+		} else {
+			espacioDisponible = parqueadero.getEspaciosCarros();
+			espacioDisponible = espacioDisponible + 1;
+			parqueadero.setEspaciosCarros(espacioDisponible);
+		}
+		
+		
+	}
+
+
+	/**
+	 * Metodo que permite obtener un registro de la base de la base de datos a través de la placa del vehiculo.
+	 * 
+	 * @param placa, placa del vehiculo.
+	 * @return entidad registro.
+	 */
+	public Registro consultarRegistro(Vehiculo vehiculo) {
+		
+		List<Registro> listaRegistros = registroRepository.findByVehiculoOrderByFechaEntradaDesc(vehiculo);
+		
+		if(listaRegistros.size() > 0){
+			Registro registro = listaRegistros.get(0);
+			return registro;
+		}
+		
+		return null;
+
+	}
+
 }

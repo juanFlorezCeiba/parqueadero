@@ -53,7 +53,7 @@ public class CarroService {
 	 * @param placa, placa del carro.
 	 * @return entidad carro.
 	 */
-	public Carro obtenerUnCarro(String placa){
+	public Carro consultarCarro(String placa){
 		Carro carro = carroRepository.findOne(placa);
 		
 		if(carro == null){
