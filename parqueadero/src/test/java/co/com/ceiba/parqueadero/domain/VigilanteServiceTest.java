@@ -1,83 +1,121 @@
 package co.com.ceiba.parqueadero.domain;
 
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;import java.util.Optional;
+import java.util.Date;
+import java.util.List;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
-import co.com.ceiba.parqueadero.ParqueaderoApplication;
 import co.com.ceiba.parqueadero.model.Carro;
 import co.com.ceiba.parqueadero.model.Moto;
 import co.com.ceiba.parqueadero.model.Parqueadero;
 import co.com.ceiba.parqueadero.model.Registro;
-import co.com.ceiba.parqueadero.repository.ConstantesRepository;
 import co.com.ceiba.parqueadero.repository.ParqueaderoRepository;
+import co.com.ceiba.parqueadero.repository.RegistroRepository;
 import co.com.ceiba.parqueadero.testdatabuilder.CarroTestDataBuilder;
 import co.com.ceiba.parqueadero.testdatabuilder.MotoTestDataBuilder;
+import co.com.ceiba.parqueadero.testdatabuilder.RegistroTestDataBuilder;
 
-
+@SpringBootTest
+@RunWith(SpringRunner.class)
+@Transactional
 public class VigilanteServiceTest {
 	
+	@InjectMocks
 	@Autowired
 	private VigilanteService vigilanteService;
-	@Autowired
-	private Carro carro;
-	@Autowired
-	 ParqueaderoRepository parqueaderoRepository;
-	@Autowired
-	Parqueadero parq;
 	
-	static Mockito mock;
+	@Mock
+	ParqueaderoRepository parqueaderoRepository;
 	
-	
-	@Before
-	public void setUp(){
-		vigilanteService = new VigilanteService();
-	}
-	
+	@Mock
+	RegistroRepository registroRepository;
+
 	/**
-	 * Prueba unitaria de la creación de un registro para una moto.
-	 */
-	@Test
-	public void crearIngresoMotoTest(){
-//		//Arrange
-//		Moto moto = new MotoTestDataBuilder().withPlaca("qqazw32").withCilindraje(650).build();
-//		
-//		//Act 
-//		String message = vigilanteService.crearIngresoMoto(moto);
-//		
-//		//Assert
-//		Assert.assertEquals(message, "HAS BEEN SAVED");
-		
-		//Arrange 
-		
-		//Act
-		parq = parqueaderoRepository.findOne(1);
-		
-		Assert.assertEquals(20, parq.getEspaciosCarros());
-	}
-	
-	
-	/**
-	 * Prueba unitaria de la creación de un registro para un carro.
+	 * Prueba unitaria para validar si el vehiculo esta parqueado.
 	 */
 	@Test
 	public void crearIngresoCarroTest(){
 		//Arrange
 		Carro carro = new CarroTestDataBuilder().withPlaca("qqazw32").withCilindraje(1400).build();
 		
-		//Act 
-		String message = vigilanteService.crearIngresoCarro(carro);
+		Parqueadero parqueadero = new Parqueadero();
+		parqueadero.setEspaciosCarros(20);
+		Mockito.when(parqueaderoRepository.findOne(1)).thenReturn(parqueadero);
 		
-		//Assert
-		Assert.assertEquals(message, "HAS BEEN SAVED");
+		//Act 
+		
+		try {
+			vigilanteService.crearIngresoCarro(carro);
+			fail();
+		} catch(RuntimeException e) {
+			Assert.assertEquals(e.getMessage(), "El vehiculo está parqueado");
+		}
+		
+	}
+	/**
+	 * Prueba unitaria para validar si el vehiculo esta parqueado.
+	 */
+	@Test
+	public void validarSiVehiculoEstaParqueadoTest(){
+		//Arrange
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2018, 01, 28, 20, 30);
+		Carro carro = new CarroTestDataBuilder().withPlaca("qqazw32").withCilindraje(1400).build();
+		Registro registro = new RegistroTestDataBuilder().withFechaEntrada(calendar).withVehiculo(carro).build();
+		List<Registro> listaRegistros = new ArrayList<>();
+		listaRegistros.add(registro);
+		
+		Parqueadero parqueadero = new Parqueadero();
+		parqueadero.setEspaciosCarros(20);
+		
+		Mockito.when(registroRepository.findByVehiculoOrderByFechaEntradaDesc(carro)).thenReturn(listaRegistros);
+		Mockito.when(parqueaderoRepository.findOne(1)).thenReturn(parqueadero);
+		
+		//Act 
+		
+		try {
+			vigilanteService.crearIngresoCarro(carro);
+			fail();
+		} catch(RuntimeException e) {
+			Assert.assertEquals(e.getMessage(), "El vehiculo está parqueado");
+		}
+		
+	}
+	
+	@Test
+	public void validarQueNoPuedeIngresarConELParqueaderoLleno(){
+		//Arrange
+		Carro carro = new CarroTestDataBuilder().withPlaca("qqazw32").withCilindraje(1400).build();
+		
+		Parqueadero parqueadero = new Parqueadero();
+		parqueadero.setEspaciosCarros(0);
+		Mockito.when(parqueaderoRepository.findOne(1)).thenReturn(parqueadero);
+		
+		//Act 
+		
+		try {
+			vigilanteService.crearIngresoCarro(carro);
+			fail();
+		} catch (RuntimeException e) {
+			//Assert
+			Assert.assertEquals(e.getMessage(), "El parqueadero està lleno");
+		}
+		 
+		
+		
 	}
 	
 	/**
@@ -122,6 +160,7 @@ public class VigilanteServiceTest {
 	    Calendar calendarInicial = Calendar.getInstance();
 	    calendarInicial.set(2018, 0, 28, 05, 40);
 	    Calendar calendarFinal = Calendar.getInstance();
+	    calendarFinal.set(2018, 0,29,10,40);
 	    Date fechaInicial = calendarInicial.getTime();
 	    Date fechaFinal = calendarFinal.getTime();
 	    
@@ -129,7 +168,7 @@ public class VigilanteServiceTest {
 	    int tarifa = vigilanteService.calcularTarifa(fechaInicial, fechaFinal, "Moto", 650);
 	    
 	    //Assert
-	    Assert.assertEquals(11000, tarifa);
+	    Assert.assertEquals(8500, tarifa);
 	    
 	}
 	
@@ -169,14 +208,19 @@ public class VigilanteServiceTest {
 	public void puedeIngresarTest(){
 		
 		//Arrange
-		String placa = "new31c";
+		String placa = "new31c";	
+		Calendar calendar = Calendar.getInstance();
+		int day = calendar.get(Calendar.DAY_OF_WEEK);
+		int day2 = 4;
 		
 		//Act
-		boolean puedeIngresar = vigilanteService.puedeIngresar(placa);
-		
+		boolean puedeIngresar = vigilanteService.puedeIngresar(placa, day);
+		boolean puedeIngresar2 = vigilanteService.puedeIngresar(placa, day2);
+
 		//Assert
 		Assert.assertEquals(true, puedeIngresar);
-		
+		Assert.assertEquals(true, puedeIngresar2);
+
 	}
 	
 	/*
@@ -188,13 +232,16 @@ public class VigilanteServiceTest {
 		
 		//Arrange
 		String placa = "acd30c";
-		
+		int day = 2;
+		int day2 = 4;
 		//Act
-		boolean puedeIngresar = vigilanteService.puedeIngresar(placa);
-		
+		boolean puedeIngresar = vigilanteService.puedeIngresar(placa, day);
+		boolean puedeIngresar2 = vigilanteService.puedeIngresar(placa, day2);
+
 		//Assert
 		Assert.assertEquals(true, puedeIngresar);
-		
+		Assert.assertEquals(true, puedeIngresar2);
+
 	}
 	
 	/**
@@ -231,4 +278,5 @@ public class VigilanteServiceTest {
 		Assert.assertNotNull(registro);
 		
 	}
+	
 }

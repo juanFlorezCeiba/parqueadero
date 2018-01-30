@@ -87,11 +87,15 @@ public class VigilanteController {
 	 * @return response, indicando si se guardo el carro.
 	 */
 	@PostMapping("/carro/crear-registro")
-	public String crearRegistroCarro(@Valid @RequestBody Carro carro){
+	public void crearRegistroCarro(@Valid @RequestBody Carro carro){
 		
-		String response = vigilanteService.crearIngresoCarro(carro);
-		
-		return response;
+		try{
+			vigilanteService.crearIngresoCarro(carro);
+		}
+		catch(RuntimeException e){
+			 e.getMessage();
+		}
+
 	}
 	
 	@GetMapping("/carro/salida/{placa}")
