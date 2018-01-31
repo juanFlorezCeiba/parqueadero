@@ -17,7 +17,6 @@ public class Moto extends Vehiculo implements Serializable{
 	}
 
 public Moto() {
-	// TODO Auto-generated constructor stub
 }
 
 }

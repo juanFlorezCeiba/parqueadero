@@ -25,7 +25,6 @@ public class Constantes implements Serializable{
 	
 	
 	public Constantes() {
-		// TODO Auto-generated constructor stub
 	}
 
 	public String getId() {

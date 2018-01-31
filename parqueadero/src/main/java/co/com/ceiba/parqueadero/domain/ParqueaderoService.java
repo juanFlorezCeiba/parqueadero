@@ -19,8 +19,7 @@ public class ParqueaderoService {
 	 */
 	public Parqueadero getParqueaderoById(int id){
 		
-		Parqueadero parqueadero = parqueaderoRepository.findOne(id);
-		
-		return parqueadero;
+		return parqueaderoRepository.findOne(id);
+	
 	}
 }

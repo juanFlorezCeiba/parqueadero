@@ -44,11 +44,8 @@ public class MotoService {
 	 */
 	public boolean existeMoto(String placa) {
 	 
-	    boolean existe = motoRepository.exists(placa);
-	    if(!existe) {
-	        return false;
-	    }
-	    return true;
+	   return motoRepository.exists(placa);
+	  
 	}
 	
 	/**

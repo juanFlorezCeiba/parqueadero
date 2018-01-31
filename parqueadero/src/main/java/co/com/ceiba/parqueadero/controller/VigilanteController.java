@@ -1,7 +1,5 @@
 package co.com.ceiba.parqueadero.controller;
 
-import java.util.Map;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +19,6 @@ import co.com.ceiba.parqueadero.model.Constantes;
 import co.com.ceiba.parqueadero.model.Moto;
 import co.com.ceiba.parqueadero.model.Registro;
 import co.com.ceiba.parqueadero.repository.ConstantesRepository;
-import co.com.ceiba.parqueadero.repository.MotoRepository;
-import co.com.ceiba.parqueadero.repository.VehiculoRepository;
 
 @RestController
 @RequestMapping("vigilante")
@@ -37,8 +33,6 @@ public class VigilanteController {
 	private MotoService motoService;
 	@Autowired
 	private ConstantesRepository constantsRepository;
-	@Autowired
-	private MotoRepository motoRepository;
 	
 	/**
 	 * Servicio de bienvenida.
@@ -68,17 +62,14 @@ public class VigilanteController {
 	@PostMapping("/moto/crear-registro")
 	public String crearRegistroMoto(@Valid @RequestBody Moto moto){
 		
-		String response = vigilanteService.crearIngresoMoto(moto);
-		
-		return response;
-		
+		return vigilanteService.crearIngresoMoto(moto);
+	
 	}
 	
 	@GetMapping("/moto/salida/{placa}")
 	public int salidaMoto(@PathVariable(value = "placa") String placa){
-		int total = vigilanteService.salidaMoto(placa);
-		
-		return total;
+		return vigilanteService.salidaMoto(placa);
+
 	}
 	
 	/**
@@ -100,9 +91,8 @@ public class VigilanteController {
 	
 	@GetMapping("/carro/salida/{placa}")
 	public int salidaCarro(@PathVariable(value = "placa") String placa){
-		int total = vigilanteService.salidaCarro(placa);
-		
-		return total;
+		return vigilanteService.salidaCarro(placa);
+
 	}
 	
 	/**

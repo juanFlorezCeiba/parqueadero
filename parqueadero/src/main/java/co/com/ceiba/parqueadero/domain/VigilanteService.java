@@ -22,6 +22,9 @@ import co.com.ceiba.parqueadero.repository.RegistroRepository;
 @Service
 public class VigilanteService {
 
+	private static final String CARRO = "Carro";
+	private static final String MOTO = "Moto";
+	
 	@Autowired
 	ConstantesRepository constantsRepository;
 	@Autowired
@@ -72,7 +75,7 @@ public class VigilanteService {
 
 		registroRepository.save(registro);
 
-		llenarUnEspacioParqueadero("Moto");
+		llenarUnEspacioParqueadero(MOTO);
 
 		return "BIKE_HAS_BEEN_SAVED";
 
@@ -107,7 +110,7 @@ public class VigilanteService {
 
 		registroRepository.save(registro);
 
-		llenarUnEspacioParqueadero("Carro");
+		llenarUnEspacioParqueadero(CARRO);
 
 	}
 
@@ -161,7 +164,7 @@ public class VigilanteService {
 		int valorHora = 0;
 		int valorDia = 0;
 
-		if (type.equals("Moto")) {
+		if (type.equals(MOTO)) {
 
 			constantValorHoraMoto = constantsRepository.findOne("valor_hora_moto");
 			constantValorDiaMoto = constantsRepository.findOne("valor_dia_moto");
@@ -211,7 +214,7 @@ public class VigilanteService {
 				return valorHora;
 			}
 			int numHoras = (int) (24 * porcentajeDias);
-			total += (int) (numHoras * valorHora);
+			total += (numHoras * valorHora);
 
 			return total;
 
@@ -246,15 +249,14 @@ public class VigilanteService {
 	 */
 	public boolean puedeIngresar(String placa, int day) {
 
+		boolean puedeIngresar = true;
 		if (placa.charAt(0) == 'a' || placa.charAt(0) == 'A') {
 
-			if (day == Calendar.SUNDAY || day == Calendar.MONDAY) {
-				return true;
-			} else {
-				return false;
-			}
+			if (day != Calendar.SUNDAY || day != Calendar.MONDAY) {
+				puedeIngresar = false;
+			} 
 		}
-		return true;
+		return puedeIngresar;
 	}
 
 	/**
@@ -268,8 +270,7 @@ public class VigilanteService {
 	 */
 	public boolean vehiculoEstaParqueado(Vehiculo vehiculo) {
 		List<Registro> registros = registroRepository.findByVehiculoOrderByFechaEntradaDesc(vehiculo);
-
-		if (registros.size() == 0) {
+		if (registros.isEmpty()) {
 			return false;
 		}
 
@@ -309,14 +310,14 @@ public class VigilanteService {
 
 		registroRepository.save(registro);
 
-		 total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Carro",
+		 total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), CARRO,
 				carro.getCilindraje());
 
-		reponerUnEspacioParqueadero("Carro");
+		reponerUnEspacioParqueadero(CARRO);
 		}
 		catch(RuntimeException e) {
 			System.out.println(e.getMessage());
-			total = -1;;
+			total = -1;
 		}
 		return  total;
 	}
@@ -343,13 +344,13 @@ public class VigilanteService {
 
 		registroRepository.save(registro);
 
-		total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), "Moto",
+		total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), MOTO,
 				moto.getCilindraje());
 
-		reponerUnEspacioParqueadero("Moto");
+		reponerUnEspacioParqueadero(MOTO);
 		}
 		catch(RuntimeException e) {
-			total = -1;;
+			total = -1;
 		}
 		return  total;
 	}
@@ -365,7 +366,7 @@ public class VigilanteService {
 
 		int espacioDisponible = 0;
 
-		if (type.equals("Moto")) {
+		if (type.equals(MOTO)) {
 			espacioDisponible = parqueadero.getEspaciosMotos();
 			espacioDisponible = espacioDisponible - 1;
 			parqueadero.setEspaciosMotos(espacioDisponible);
@@ -388,7 +389,7 @@ public class VigilanteService {
 
 		int espacioDisponible = 0;
 
-		if (type.equals("Moto")) {
+		if (type.equals(MOTO)) {
 			espacioDisponible = parqueadero.getEspaciosMotos();
 			espacioDisponible = espacioDisponible + 1;
 			parqueadero.setEspaciosMotos(espacioDisponible);
@@ -412,9 +413,9 @@ public class VigilanteService {
 
 		List<Registro> listaRegistros = registroRepository.findByVehiculoOrderByFechaEntradaDesc(vehiculo);
 
-		if (listaRegistros.size() > 0) {
-			Registro registro = listaRegistros.get(0);
-			return registro;
+		if (!listaRegistros.isEmpty()) {
+			return listaRegistros.get(0);
+		
 		}
 
 		return null;

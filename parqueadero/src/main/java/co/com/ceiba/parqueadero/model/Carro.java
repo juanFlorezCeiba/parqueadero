@@ -15,12 +15,10 @@ public class Carro extends Vehiculo implements Serializable{
 
 
 	public Carro() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public Carro(String placa, int cilindraje) {
 		super(placa, cilindraje);
-		// TODO Auto-generated constructor stub
 	}
 
 	

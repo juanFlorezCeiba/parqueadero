@@ -41,11 +41,7 @@ public class CarroService {
 	 */
 	public boolean existeCarro(String placa) {
 	 
-	    boolean existe = carroRepository.exists(placa);
-	    if(!existe) {
-	        return false;
-	    }
-	    return true;
+	   return carroRepository.exists(placa);
 	}
 	
 	/**

@@ -3,7 +3,6 @@ package co.com.ceiba.parqueadero.model;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -36,7 +35,6 @@ public class Parqueadero {
 
 	
 	public Parqueadero() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	//Getters and Setters

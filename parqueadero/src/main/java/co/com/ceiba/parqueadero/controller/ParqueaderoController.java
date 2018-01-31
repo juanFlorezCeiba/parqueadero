@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.com.ceiba.parqueadero.domain.ParqueaderoService;
 import co.com.ceiba.parqueadero.model.Parqueadero;
-import co.com.ceiba.parqueadero.repository.ParqueaderoRepository;
 
 @RestController
 @RequestMapping("/parqueadero")
