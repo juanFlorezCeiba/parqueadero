@@ -3,15 +3,10 @@ package co.com.ceiba.parqueadero.domain;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-
-import javax.management.RuntimeErrorException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import ch.qos.logback.classic.Logger;
 import co.com.ceiba.parqueadero.model.Carro;
 import co.com.ceiba.parqueadero.model.Constantes;
 import co.com.ceiba.parqueadero.model.Moto;
@@ -123,21 +118,21 @@ public class VigilanteService {
 	 *            entidad carro.
 	 * @param day
 	 */
-	private void validarSiVehiculoPuedeIngresar(Vehiculo vehiculo, int day) throws RuntimeException {
+	private void validarSiVehiculoPuedeIngresar(Vehiculo vehiculo, int day) {
 		// Se valida si el carro puede acceder al parqueadero.
 		if (!puedeIngresar(vehiculo.getPlaca(), day)) {
 			throw new RuntimeException("El vehiculo no puede acceder al parqueadero");
 		}
 	}
 
-	private void validarSiVehiculoEstaParqueado(Vehiculo vehiculo)  throws RuntimeException{
+	private void validarSiVehiculoEstaParqueado(Vehiculo vehiculo) {
 		// Se valida si el carro esta parqueado en este momento.
 		if (vehiculoEstaParqueado(vehiculo)) {
 			throw new RuntimeException("El vehiculo está parqueado");
 		}
 	}
 
-	private void validarDisponibilidadDeCarros(int espaciosCarros) throws RuntimeException{
+	private void validarDisponibilidadDeCarros(int espaciosCarros) {
 		// Se verifica si hay espacio en el parqueadero.
 		if (espaciosCarros == 0) {
 			throw new RuntimeException("El parqueadero està lleno");
@@ -159,8 +154,8 @@ public class VigilanteService {
 	public int calcularTarifa(Date fechaInicial, Date fechaFinal, String type, int cilindraje) {
 
 		float diff = (float)(fechaFinal.getTime() - fechaInicial.getTime()) / 60000;
-		float totalHoras = (float)diff / 60;
-		float porcentajeDias = (float)totalHoras / 24;
+		float totalHoras = diff / 60;
+		float porcentajeDias = totalHoras / 24;
 
 		int total = 0;
 		int valorHora = 0;
