@@ -249,12 +249,13 @@ public class VigilanteService {
 	 */
 	public boolean puedeIngresar(String placa, int day) {
 
-		boolean puedeIngresar = true;
+		boolean puedeIngresar = false;
 		if (placa.charAt(0) == 'a' || placa.charAt(0) == 'A') {
-
-			if (day != Calendar.SUNDAY || day != Calendar.MONDAY) {
-				puedeIngresar = false;
+			if (day == Calendar.SUNDAY || day == Calendar.MONDAY) {
+				puedeIngresar = true;
 			} 
+		} else {
+			puedeIngresar = true;
 		}
 		return puedeIngresar;
 	}
