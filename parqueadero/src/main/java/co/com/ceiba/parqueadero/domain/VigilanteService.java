@@ -422,5 +422,15 @@ public class VigilanteService {
 		return null;
 
 	}
+	
+	/**
+	 * Metodo que permite obtener todos los registros del carro.
+	 * @return
+	 */
+	public List<Registro> obtenerTodosLosRegistrosDeVehiculosParqueados(){
+		return registroRepository.obtenerRegistrosDeLosVehiculosParqueados();
+		//return registroRepository.findAllByFechaSalidaNull();
+		//return registroRepository.findAll();
+	}
 
 }

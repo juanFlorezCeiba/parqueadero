@@ -311,4 +311,25 @@ public class VigilanteServiceTest {
 		
 	}
 	
+	@Test
+	public void obtenerRegistroTodosLosVehiculosParqueadosTest(){
+		
+		//Arrange
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2018, 01, 28, 20, 30);
+		String placa = "qwerty201";
+		Moto moto = new MotoTestDataBuilder().withPlaca(placa).withCilindraje(259).build();
+		Registro registro = new RegistroTestDataBuilder().withFechaEntrada(calendar).withVehiculo(moto).build();
+		List<Registro> listaRegistros = new ArrayList<>();
+		listaRegistros.add(registro);
+		Mockito.when(registroRepository.obtenerRegistrosDeLosVehiculosParqueados()).thenReturn(listaRegistros);
+		
+		//Act
+		List<Registro> listaVehiculosParqueados = vigilanteService.obtenerTodosLosRegistrosDeVehiculosParqueados();
+		
+		//Assert
+		Assert.assertNotEquals(0, listaVehiculosParqueados.size());
+		
+	}
+	
 }

@@ -1,5 +1,7 @@
 package co.com.ceiba.parqueadero.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,5 +133,12 @@ public class VigilanteController {
 		
 		return (registro == null)?ResponseEntity.notFound().build():ResponseEntity.ok().body(registro);
 		
+	}
+	
+	
+	@GetMapping("/obtener")
+	public List<Registro> obtenerRegistrosMotos(){
+	
+		return vigilanteService.obtenerTodosLosRegistrosDeVehiculosParqueados();
 	}
 }

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Entity
 @Table(name = "registros")
 @EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(
+@JsonIgnoreProperties(value = {"createdAt", "updatedAt"}, 
 allowGetters = true)
 public class Registro  implements Serializable{
 
@@ -29,7 +29,7 @@ public class Registro  implements Serializable{
 	@Column(name = "fecha_salida", nullable = true)
 	private Calendar fechaSalida;
 
-	@OneToOne(fetch=FetchType.LAZY)
+	@OneToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name="vehiculo_placa")
 	private Vehiculo vehiculo;
 	
