@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import ch.qos.logback.classic.Logger;
 import co.com.ceiba.parqueadero.model.Carro;
 import co.com.ceiba.parqueadero.model.Constantes;
 import co.com.ceiba.parqueadero.model.Moto;
@@ -122,21 +123,21 @@ public class VigilanteService {
 	 *            entidad carro.
 	 * @param day
 	 */
-	private void validarSiVehiculoPuedeIngresar(Vehiculo vehiculo, int day) {
+	private void validarSiVehiculoPuedeIngresar(Vehiculo vehiculo, int day) throws RuntimeException {
 		// Se valida si el carro puede acceder al parqueadero.
 		if (!puedeIngresar(vehiculo.getPlaca(), day)) {
 			throw new RuntimeException("El vehiculo no puede acceder al parqueadero");
 		}
 	}
 
-	private void validarSiVehiculoEstaParqueado(Vehiculo vehiculo) {
+	private void validarSiVehiculoEstaParqueado(Vehiculo vehiculo)  throws RuntimeException{
 		// Se valida si el carro esta parqueado en este momento.
 		if (vehiculoEstaParqueado(vehiculo)) {
 			throw new RuntimeException("El vehiculo está parqueado");
 		}
 	}
 
-	private void validarDisponibilidadDeCarros(int espaciosCarros) {
+	private void validarDisponibilidadDeCarros(int espaciosCarros) throws RuntimeException{
 		// Se verifica si hay espacio en el parqueadero.
 		if (espaciosCarros == 0) {
 			throw new RuntimeException("El parqueadero està lleno");
@@ -157,12 +158,9 @@ public class VigilanteService {
 	 */
 	public int calcularTarifa(Date fechaInicial, Date fechaFinal, String type, int cilindraje) {
 
-		// Constantes constantTypeVehicle =
-		// constantsRepository.findOne("vehiculo_tipo");
-
-		float diff = (fechaFinal.getTime() - fechaInicial.getTime()) / 60000;
-		float totalHoras = diff / 60;
-		float porcentajeDias = totalHoras / 24;
+		float diff = (float)(fechaFinal.getTime() - fechaInicial.getTime()) / 60000;
+		float totalHoras = (float)diff / 60;
+		float porcentajeDias = (float)totalHoras / 24;
 
 		int total = 0;
 		int valorHora = 0;
@@ -176,9 +174,6 @@ public class VigilanteService {
 			valorHora = Integer.parseInt(constantValorHoraMoto.getValor());
 			valorDia = Integer.parseInt(constantValorDiaMoto.getValor());
 
-			// valorHora = 500;
-			// valorDia = 4000;
-			//
 			total += totalTarifa(valorHora, valorDia, porcentajeDias, total);
 
 			if (cilindraje > 500) {
@@ -359,7 +354,6 @@ public class VigilanteService {
 		reponerUnEspacioParqueadero("Moto");
 		}
 		catch(RuntimeException e) {
-			System.out.println(e.getMessage());
 			total = -1;;
 		}
 		return  total;

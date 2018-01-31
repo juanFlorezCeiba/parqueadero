@@ -32,8 +32,6 @@ public class MotoController {
 		map.put("Status", "Repeat");
 		
 		if(!motoRepository.exists(moto.getPlaca())){
-
-			System.out.println("MOTO: Placa = " + moto.getPlaca() + " - Cilindraje = " + moto.getCilindraje());
 			motoRepository.save(moto);
 			 map.put("Status", "OK");
 		} 
