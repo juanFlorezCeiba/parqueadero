@@ -257,6 +257,7 @@ public class VigilanteService {
 		} else {
 			puedeIngresar = true;
 		}
+		System.out.println(puedeIngresar);
 		return puedeIngresar;
 	}
 
@@ -331,10 +332,8 @@ public class VigilanteService {
 	 *            placa del vehiculo.
 	 * @return response, la cual contendrá la respuesta al proceso.
 	 */
-	public int salidaMoto(String placa) {
+	public void salidaMoto(String placa) {
 
-		int total = 0;
-		try {
 		Calendar fechaSalida = Calendar.getInstance();
 
 		Moto moto = motoRepository.findOne(placa);
@@ -344,16 +343,9 @@ public class VigilanteService {
 		registro.setFechaSalida(fechaSalida);
 
 		registroRepository.save(registro);
-
-		total = calcularTarifa(registro.getFechaEntrada().getTime(), registro.getFechaSalida().getTime(), MOTO,
-				moto.getCilindraje());
-
 		reponerUnEspacioParqueadero(MOTO);
-		}
-		catch(RuntimeException e) {
-			total = -1;
-		}
-		return  total;
+		
+
 	}
 
 	/**
@@ -432,5 +424,12 @@ public class VigilanteService {
 		//return registroRepository.findAllByFechaSalidaNull();
 		//return registroRepository.findAll();
 	}
+	
+	
+	public Registro consultarRegistroPorId(int id) {
+		
+		return registroRepository.findOne(id);
+	}
+	
 
 }

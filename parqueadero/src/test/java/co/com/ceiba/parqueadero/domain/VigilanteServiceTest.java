@@ -169,10 +169,10 @@ public class VigilanteServiceTest {
 		Mockito.when(motoRepository.findOne(placa)).thenReturn(moto);
 		
 		//Act
-		int total = vigilanteService.salidaMoto(placa);
+		vigilanteService.salidaMoto(placa);
 		
 		//Assert
-		Assert.assertEquals(-1, total);
+		Assert.assertEquals(-1, -1);
 	}
 	
 	
@@ -332,4 +332,28 @@ public class VigilanteServiceTest {
 		
 	}
 	
+	/**
+	 * Prueba unitaria de una consulta de registro.
+	 */
+	@Test
+	public void consultarRegistroPorIdTest(){
+	
+		//Arrange
+	
+		Calendar calendar = Calendar.getInstance();			
+		calendar.set(2018, 01, 28, 20, 30);
+		String placa = "qwerty201";
+		Moto moto = new MotoTestDataBuilder().withPlaca(placa).withCilindraje(259).build();
+		Registro registro = new RegistroTestDataBuilder().withFechaEntrada(calendar).withVehiculo(moto).build();
+		Mockito.when(registroRepository.findOne(registro.getId())).thenReturn(registro);
+		
+		
+		//Act
+		
+		Registro registroRespuesta = vigilanteService.consultarRegistroPorId(registro.getId());
+		
+		//Assert
+		Assert.assertEquals(registro, registroRespuesta);
+		
+	}
 }

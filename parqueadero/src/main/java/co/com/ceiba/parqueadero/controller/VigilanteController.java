@@ -1,6 +1,9 @@
 package co.com.ceiba.parqueadero.controller;
 
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -69,8 +72,8 @@ public class VigilanteController {
 	}
 	
 	@GetMapping("/moto/salida/{placa}")
-	public int salidaMoto(@PathVariable(value = "placa") String placa){
-		return vigilanteService.salidaMoto(placa);
+	public void salidaMoto(@PathVariable(value = "placa") String placa){
+		 vigilanteService.salidaMoto(placa);
 
 	}
 	
@@ -136,9 +139,46 @@ public class VigilanteController {
 	}
 	
 	
+	/**
+	 * Servicio que permite obtener todos los registros.
+	 * @return lista de registros.
+	 */
 	@GetMapping("/obtener")
-	public List<Registro> obtenerRegistrosMotos(){
+	public List<Registro> obtenerRegistros(){
 	
 		return vigilanteService.obtenerTodosLosRegistrosDeVehiculosParqueados();
 	}
+	
+	/**
+	 * Servicio que permite obtener el total de la tarifa de un registro.
+	 * @param id, identificador de un registro.
+	 * @return el total de la tarifa.
+	 */
+	@GetMapping("/obtener-total/{id}")
+	public Map<String, Integer> obtenerTotal(@PathVariable(value = "id") int id){
+		Calendar fechaSalida = Calendar.getInstance();
+		Registro registro = vigilanteService.consultarRegistroPorId(id);
+		
+		String type = registro.getVehiculo().getClass().getSimpleName();
+		int tarifa = vigilanteService.calcularTarifa(registro.getFechaEntrada().getTime(), fechaSalida.getTime(), type, registro.getVehiculo().getCilindraje());
+
+		Map<String, Integer> lista = new HashMap<>();
+		lista.put("tarifa", tarifa);
+		return  lista;
+			}
+
+	/**
+	 * Servicio que permite pagar y liquidar un registro.
+	 * @param id, identificación de un registro.
+	 */
+	@GetMapping("/pagar/{id}")
+	public void pagarTarifa(@PathVariable(value = "id") int id){
+		
+		Registro registro = vigilanteService.consultarRegistroPorId(id);
+
+		vigilanteService.salidaMoto(registro.getVehiculo().getPlaca());
+		}
+
 }
+
+
