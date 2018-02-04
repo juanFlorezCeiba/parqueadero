@@ -28,6 +28,7 @@ import co.com.ceiba.parqueadero.repository.ParqueaderoRepository;
 import co.com.ceiba.parqueadero.repository.RegistroRepository;
 import co.com.ceiba.parqueadero.testdatabuilder.CarroTestDataBuilder;
 import co.com.ceiba.parqueadero.testdatabuilder.MotoTestDataBuilder;
+import co.com.ceiba.parqueadero.testdatabuilder.ParqueaderoTestDataBuilder;
 import co.com.ceiba.parqueadero.testdatabuilder.RegistroTestDataBuilder;
 
 @SpringBootTest
@@ -162,11 +163,14 @@ public class VigilanteServiceTest {
 		String placa = "qwerty201";
 		Moto moto = new MotoTestDataBuilder().withPlaca(placa).withCilindraje(259).build();
 		Registro registro = new RegistroTestDataBuilder().withFechaEntrada(calendar).withVehiculo(moto).build();
+		Parqueadero parqueadero = new ParqueaderoTestDataBuilder().build();
 		List<Registro> listaRegistros = new ArrayList<>();
 		listaRegistros.add(registro);
 		
 		Mockito.when(registroRepository.findByVehiculoOrderByFechaEntradaDesc(moto)).thenReturn(listaRegistros);
 		Mockito.when(motoRepository.findOne(placa)).thenReturn(moto);
+		Mockito.when(parqueaderoRepository.findOne(1)).thenReturn(parqueadero)
+		;
 		
 		//Act
 		vigilanteService.salidaMoto(placa);

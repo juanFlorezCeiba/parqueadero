@@ -37,6 +37,19 @@ public class Parqueadero {
 	public Parqueadero() {
 	}
 	
+
+	
+	
+	public Parqueadero(int id, int espaciosCarros, int espaciosMotos) {
+		super();
+		this.id = id;
+		this.espaciosCarros = espaciosCarros;
+		this.espaciosMotos = espaciosMotos;
+	}
+
+
+
+
 	//Getters and Setters
 	
 	public int getId() {
