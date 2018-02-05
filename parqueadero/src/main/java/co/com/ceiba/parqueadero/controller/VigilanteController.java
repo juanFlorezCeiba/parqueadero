@@ -8,12 +8,15 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.com.ceiba.parqueadero.domain.CarroService;
@@ -24,6 +27,7 @@ import co.com.ceiba.parqueadero.model.Constantes;
 import co.com.ceiba.parqueadero.model.Moto;
 import co.com.ceiba.parqueadero.model.Registro;
 import co.com.ceiba.parqueadero.repository.ConstantesRepository;
+import co.com.ceiba.parquedero.exception.CreatingRegisterException;
 
 @RestController
 @RequestMapping("vigilante")
@@ -65,9 +69,10 @@ public class VigilanteController {
 	 * @return response, indicando si se guardo la moto.
 	 */
 	@PostMapping("/moto/crear-registro")
-	public String crearRegistroMoto(@Valid @RequestBody Moto moto){
+	@ResponseStatus(value = HttpStatus.OK)
+	public void crearRegistroMoto(@Valid @RequestBody Moto moto) throws CreatingRegisterException{
 		
-		return vigilanteService.crearIngresoMoto(moto);
+		vigilanteService.crearIngresoMoto(moto);
 	
 	}
 	

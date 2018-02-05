@@ -18,6 +18,7 @@ import co.com.ceiba.parqueadero.repository.ConstantesRepository;
 import co.com.ceiba.parqueadero.repository.MotoRepository;
 import co.com.ceiba.parqueadero.repository.ParqueaderoRepository;
 import co.com.ceiba.parqueadero.repository.RegistroRepository;
+import co.com.ceiba.parquedero.exception.CreatingRegisterException;
 
 @Service
 public class VigilanteService {
@@ -47,37 +48,37 @@ public class VigilanteService {
 	 *            moto la cual ingresará al parqueadero.
 	 * @return cadena, la cual indica si ingreso o no al parqueadero.
 	 */
-	public String crearIngresoMoto(Moto moto) {
+	public void crearIngresoMoto(Moto moto) throws CreatingRegisterException{
 		Parqueadero parqueadero = parqueaderoRepository.findOne(1);
 
 		Calendar calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_WEEK);
 
-		// Se valida si la moto esta parqueado en este momento.
-		if (vehiculoEstaParqueado(moto)) {
-			return "VEHICLE_IS_PAR   ED_NOW";
-		}
-		// Se valida si la moto puede acceder al parqueadero.
-		if (!puedeIngresar(moto.getPlaca(), day)) {
-			return "IS_NOT_SUNDAY_MONDAY";
-		}
+			// Se valida si la moto esta parqueado en este momento.
+			if (vehiculoEstaParqueado(moto)) {
+				throw new CreatingRegisterException("El vehiculo ya esta parqueado.", 501);
+			}
+			// Se valida si la moto puede acceder al parqueadero.
+			if (!puedeIngresar(moto.getPlaca(), day)) {
+				throw new CreatingRegisterException("Hoy no es lunes o domingo.", 502);
+			}
 
-		int espaciosMotos = parqueadero.getEspaciosMotos();
+			int espaciosMotos = parqueadero.getEspaciosMotos();
 
-		// Se verifica si hay espacio en el parqueadero.
-		if (espaciosMotos == 0) {
-			return "THERE_IS_NOT_SPACE";
-		}
-		motoRepository.save(moto);
+			// Se verifica si hay espacio en el parqueadero.
+			if (espaciosMotos == 0) {
+				throw new CreatingRegisterException("No hay espacios.", 503);
 
-		Registro registro = new Registro();
-		registro.setVehiculo(moto);
+			}
+			motoRepository.save(moto);
 
-		registroRepository.save(registro);
+			Registro registro = new Registro();
+			registro.setVehiculo(moto);
 
-		llenarUnEspacioParqueadero(MOTO);
+			registroRepository.save(registro);
 
-		return "BIKE_HAS_BEEN_SAVED";
+			llenarUnEspacioParqueadero(MOTO);
+		
 
 	}
 
@@ -362,13 +363,17 @@ public class VigilanteService {
 		if (type.equals(MOTO)) {
 			espacioDisponible = parqueadero.getEspaciosMotos();
 			espacioDisponible = espacioDisponible - 1;
+			System.out.println("PARK BEFORE: " + parqueadero.getEspaciosMotos());
 			parqueadero.setEspaciosMotos(espacioDisponible);
+			System.out.println("PARK AFTER: " + parqueadero.getEspaciosMotos());
+
 		} else {
 			espacioDisponible = parqueadero.getEspaciosCarros();
 			espacioDisponible = espacioDisponible - 1;
 			parqueadero.setEspaciosCarros(espacioDisponible);
 		}
 
+		parqueaderoRepository.save(parqueadero);
 	}
 
 	/**
@@ -391,6 +396,8 @@ public class VigilanteService {
 			espacioDisponible = espacioDisponible + 1;
 			parqueadero.setEspaciosCarros(espacioDisponible);
 		}
+		
+		parqueaderoRepository.save(parqueadero);
 
 	}
 
@@ -420,8 +427,8 @@ public class VigilanteService {
 	 * @return
 	 */
 	public List<Registro> obtenerTodosLosRegistrosDeVehiculosParqueados(){
-		return registroRepository.obtenerRegistrosDeLosVehiculosParqueados();
-		//return registroRepository.findAllByFechaSalidaNull();
+	//	return registroRepository.obtenerRegistrosDeLosVehiculosParqueados();
+	return registroRepository.findAllByFechaSalidaNull();
 		//return registroRepository.findAll();
 	}
 	
